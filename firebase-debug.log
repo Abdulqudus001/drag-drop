@@ -1,0 +1,54 @@
+[debug] [2019-09-02T12:58:17.647Z] ----------------------------------------------------------------------
+[debug] [2019-09-02T12:58:17.652Z] Command:       /home/ibn-abubakre/.nvm/versions/node/v12.7.0/bin/node /home/ibn-abubakre/.yarn/bin/firebase init
+[debug] [2019-09-02T12:58:17.653Z] CLI Version:   7.2.4
+[debug] [2019-09-02T12:58:17.653Z] Platform:      linux
+[debug] [2019-09-02T12:58:17.653Z] Node Version:  v12.7.0
+[debug] [2019-09-02T12:58:17.654Z] Time:          Mon Sep 02 2019 13:58:17 GMT+0100 (West Africa Standard Time)
+[debug] [2019-09-02T12:58:17.654Z] ----------------------------------------------------------------------
+[debug] 
+[warn] ⚠  JSON error trying to load /home/ibn-abubakre/Desktop/works/vuse-quickstart_v2/.firebaserc
+[debug] [2019-09-02T12:58:17.681Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2019-09-02T12:58:17.682Z] > authorizing via signed-in user
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /home/ibn-abubakre/Desktop/works/vuse-quickstart_v2
+
+Before we get started, keep in mind:
+
+  * You are initializing in an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2019-09-02T12:58:36.039Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2019-09-02T12:58:36.040Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ <request body omitted>
+[debug] [2019-09-02T12:58:36.107Z] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2019-09-02T12:58:36.678Z] FirebaseError: Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+    at Object.<anonymous> (/home/ibn-abubakre/.config/yarn/global/node_modules/firebase-tools/lib/auth.js:23:32)
+    at Module._compile (internal/modules/cjs/loader.js:777:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:788:10)
+    at Module.load (internal/modules/cjs/loader.js:643:32)
+    at Function.Module._load (internal/modules/cjs/loader.js:556:12)
+    at Module.require (internal/modules/cjs/loader.js:683:19)
+    at require (internal/modules/cjs/helpers.js:16:16)
+    at Object.<anonymous> (/home/ibn-abubakre/.config/yarn/global/node_modules/firebase-tools/lib/commands/login.js:8:12)
+    at Module._compile (internal/modules/cjs/loader.js:777:30)
+    at Object.Module._extensions..js (internal/modules/cjs/loader.js:788:10)
+[error] 
+[error] Error: Failed to list Firebase projects. See firebase-debug.log for more info.
