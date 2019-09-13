@@ -53,6 +53,21 @@
         </v-card>
       </v-flex>
     </v-layout>
+
+    <!-- Navbar -->
+    <v-layout row wrap>
+      <v-flex xs12>
+        <v-subheader class="pl-0">Navbar</v-subheader>
+        <v-card class="elevation-0">
+          <v-card-text class="pa-0">
+            <v-radio-group row v-model="configSidenav" class="dense-input mt-0">
+              <v-radio label="Left" value="left" color="primary"></v-radio>
+              <v-radio label="Right" value="right" color="primary"></v-radio>
+            </v-radio-group>
+          </v-card-text>
+        </v-card>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 <script>
@@ -79,15 +94,15 @@ export default {
       set(value) {
         this.$store.dispatch("toggleFixFooter", value);
       }
+    },
+    configSidenav: {
+      get() {
+        return this.navDrawerPosition;
+      },
+      set(value) {
+        this.$store.dispatch("setSidenavPosition", value);
+      }
     }
-    // configSidenav: {
-    //   get () {
-    //     return this.navDrawerPosition
-    //   },
-    //   set (value) {
-    //     this.$store.dispatch('setSidenavPosition', value)
-    //   }
-    // },
   }
 };
 </script>

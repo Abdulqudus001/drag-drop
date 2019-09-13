@@ -15,6 +15,7 @@
     :left="navDrawerPosition === 'left'"
     :right="navDrawerPosition === 'right'"
     enable-resize-watcher
+    hide-overlay
     floating
     id="app-drawer"
     app

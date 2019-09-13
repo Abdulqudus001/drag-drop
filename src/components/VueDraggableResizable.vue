@@ -12,6 +12,7 @@
   </vue-draggable-resizable>
 </template>
 <script>
+//eslint-disable-next-line
 import VueDraggableResizable from "vue-draggable-resizable";
 export default {
   data: () => ({
@@ -28,7 +29,6 @@ export default {
       this.height = height;
     },
     onDrag: function(x, y) {
-      console.log("hey");
       this.x = x;
       this.y = y;
     }

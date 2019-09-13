@@ -1,20 +1,40 @@
 <template>
   <div>
-    <section-definition
-      :title="page.title"
-      :breadcrumbs="breadcrumbs"
-    ></section-definition>
     <v-container fluid grid-list-xl page>
       <v-layout row wrap>
-        <v-flex xs12 sm8 md12>
-          <div id="div1" @drop="drop($event)" @dragover="allowDrop($event)">
+        <v-flex xs12 sm12 md12>
+          <div class="nav">
+            <ul>
+              <li class="header">Flow</li>
+              <li
+                v-for="(item, index) in shapes"
+                :key="item.id"
+                @mouseenter="highlightFlow(item.id)"
+                @mouseleave="unHighlightFlow(item.id)"
+              >
+                {{ item.title }}
+                <v-icon @click="removeFlow(index)" class="close">close</v-icon>
+              </li>
+              <li class="header">Connection</li>
+              <!-- <li v-for="(item, index) in shapes" :key="item.id">
+                {{ item.title }}
+                <v-icon @click="removeFlow(index)" class="close">close</v-icon>
+              </li> -->
+            </ul>
+          </div>
+          <div
+            id="div1"
+            @drop="drop($event)"
+            @dragover="allowDrop($event)"
+            @click.stop="hideFooter($event)"
+          >
             <vue-draggable-resizable
               v-for="item in shapes"
               :key="item.id"
-              :min-width="60"
-              :min-height="60"
-              :w="60"
-              :h="60"
+              :min-width="100"
+              :min-height="100"
+              :w="100"
+              :h="100"
               :x="item.x"
               :y="item.y"
               :class-name="item.data"
@@ -23,19 +43,59 @@
               :grid="[20, 20]"
               @dragging="onDrag"
               @resizing="onResize"
-              @activated="showCircle = true"
-              @deactivated="showCircle = false"
+              @activated="activated(item.id)"
+              @deactivated="item.showCircle = false"
+              :active="item.showFooter"
             >
               <div
                 draggable="true"
                 class="connect-arrow"
                 @dragstart="drag($event)"
+                id="drag"
+                v-show="item.showCircle"
+              ></div>
+              <div
+                class="content"
+                :id="item.id"
                 @drop="dropArrow(item.id, $event)"
                 @dragover="allowDrop($event)"
-                id="drag"
-                v-show="showCircle"
-              ></div>
+              >
+                <div :id="item.id" class="content__header">
+                  <p>{{ item.title }}</p>
+                </div>
+                <div :id="item.id" class="content__description">
+                  <p>{{ item.description }}</p>
+                </div>
+              </div>
             </vue-draggable-resizable>
+          </div>
+          <div
+            v-for="footer in shapes"
+            :key="footer.id"
+            class="foot"
+            v-show="footer.showFooter"
+          >
+            <v-icon class="close" @click="deActivated(footer.id)">close</v-icon>
+            <div class="input">
+              <label for="title">Title</label>
+              <input
+                v-model="footer.title"
+                type="text"
+                name="title"
+                id="title"
+                placeholder="Enter title text"
+              />
+            </div>
+            <div class="input">
+              <label for="desc">Description</label>
+              <input
+                v-model="footer.description"
+                type="text"
+                name="desc"
+                id="desc"
+                placeholder="Enter description text"
+              />
+            </div>
           </div>
         </v-flex>
       </v-layout>
@@ -76,7 +136,8 @@ export default {
       line: [],
       start: "",
       end: "",
-      showCircle: false
+      showCircle: false,
+      showFooter: false
     };
   },
   methods: {
@@ -102,6 +163,9 @@ export default {
       ev.preventDefault();
     },
     dropArrow(id, ev) {
+      this.shapes.forEach(shape => {
+        shape.showFooter = false;
+      });
       ev.preventDefault();
       this.end = ev.target.parentNode.id;
       let line = new window.LeaderLine(
@@ -125,11 +189,42 @@ export default {
             id: this.shapeCount,
             data: data,
             x: ev.offsetX,
-            y: ev.offsetY
+            y: ev.offsetY,
+            title: `Title${this.shapeCount}`,
+            description: `Description${this.shapeCount}`,
+            showFooter: false,
+            showCircle: false
           });
           this.shapeCount += 1;
         }
       }
+    },
+    activated(id) {
+      this.shapes.forEach(shape => {
+        shape.showFooter = false;
+      });
+      this.shapes[id].showFooter = true;
+      this.shapes[id].showCircle = true;
+    },
+    deActivated(id) {
+      this.shapes[id].showFooter = false;
+      this.shapes[id].showCircle = false;
+    },
+    hideFooter(e) {
+      if (e.target.id == "div1") {
+        this.shapes.forEach(shape => {
+          shape.showFooter = false;
+        });
+      }
+    },
+    removeFlow(index) {
+      this.shapes.splice(index, 1);
+    },
+    highlightFlow(id) {
+      document.getElementById(id).classList.add("hover");
+    },
+    unHighlightFlow(id) {
+      document.getElementById(id).classList.remove("hover");
     }
   }
 };
@@ -141,6 +236,50 @@ export default {
   max-width: 100%;
   height: 500px;
   position: relative;
+  left: 200px;
+}
+.nav {
+  width: 200px;
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  top: 0;
+  background: #fff;
+  box-shadow: 0px 2px 2px 0 rgba(0, 0, 0, 0.2);
+}
+
+.nav ul {
+  padding: 0;
+}
+
+.nav li {
+  list-style-type: none;
+  margin: 20px 0;
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+}
+
+.nav li:hover {
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px;
+}
+
+.content {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+.content__header {
+  background: #241d3b;
+  text-align: center;
+  font-weight: bold;
+  color: #fff;
 }
 .square,
 .circle,
@@ -240,5 +379,50 @@ export default {
   bottom: -10px;
   right: -10px;
   cursor: se-resize;
+}
+.foot {
+  position: absolute;
+  bottom: 0px;
+  box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.2);
+  left: 200px;
+  right: 0;
+  padding: 20px;
+  background: #fff;
+}
+
+.foot .close,
+.nav .close {
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  background: #241d3b;
+  color: #fff;
+  cursor: pointer;
+}
+
+.nav .close {
+  top: 10px;
+  width: 20px;
+  height: 20px;
+}
+
+.input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.input input {
+  border: 1px solid #241d3b;
+  padding: 5px 20px;
+  width: 80%;
+  border-radius: 5px;
+}
+
+.hover {
+  border: 1.5px solid red;
 }
 </style>
