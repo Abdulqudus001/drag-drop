@@ -163,7 +163,7 @@ export default {
     },
     drag(ev) {
       ev.stopPropagation();
-      ev.dataTransfer.setData('text', 'foo');
+      ev.dataTransfer.setData("text", "foo");
       this.start = ev.target.parentNode.id;
     },
     allowDrop(ev) {
@@ -235,8 +235,8 @@ export default {
     },
     highlightLine(index) {
       this.line[index].outline = true;
-      this.line[index].outlineColor = 'red';
-      this.line[index].outlineSize = '4';
+      this.line[index].outlineColor = "red";
+      this.line[index].outlineSize = "4";
     },
     unHighlightLine(index) {
       this.line[index].outline = false;
