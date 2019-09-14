@@ -16,10 +16,15 @@
                 <v-icon @click="removeFlow(index)" class="close">close</v-icon>
               </li>
               <li class="header">Connection</li>
-              <!-- <li v-for="(item, index) in shapes" :key="item.id">
-                {{ item.title }}
-                <v-icon @click="removeFlow(index)" class="close">close</v-icon>
-              </li> -->
+              <li
+                v-for="(item, index) in line"
+                :key="item.id"
+                @mouseenter="highlightLine(index)"
+                @mouseleave="unHighlightLine(index)"
+              >
+                Connection{{ index }}
+                <v-icon @click="removeLine(index)" class="close">close</v-icon>
+              </li>
             </ul>
           </div>
           <div
@@ -38,6 +43,7 @@
               :x="item.x"
               :y="item.y"
               :class-name="item.data"
+              class-name-handle="custom-handle"
               :id="`vdr${item.id}`"
               :parent="true"
               :grid="[20, 20]"
@@ -157,6 +163,7 @@ export default {
     },
     drag(ev) {
       ev.stopPropagation();
+      ev.dataTransfer.setData('text', 'foo');
       this.start = ev.target.parentNode.id;
     },
     allowDrop(ev) {
@@ -225,6 +232,18 @@ export default {
     },
     unHighlightFlow(id) {
       document.getElementById(id).classList.remove("hover");
+    },
+    highlightLine(index) {
+      this.line[index].outline = true;
+      this.line[index].outlineColor = 'red';
+      this.line[index].outlineSize = '4';
+    },
+    unHighlightLine(index) {
+      this.line[index].outline = false;
+    },
+    removeLine(index) {
+      this.line[index].remove();
+      this.line.splice(index, 1);
     }
   }
 };
@@ -332,7 +351,6 @@ export default {
 }
 
 .custom-handle-tm {
-  /* background-color: pink; */
   border: none;
   border-radius: 50%;
   top: -10px;
