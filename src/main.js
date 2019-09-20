@@ -1,4 +1,5 @@
 import Vue from "vue";
+import VueMultiselect from "vue-multiselect";
 import "./plugins/vuetify";
 import "./plugins/vuse";
 import App from "./App.vue";
@@ -11,6 +12,7 @@ Vue.config.productionTip = false;
 import VueDraggableResizable from "vue-draggable-resizable";
 import "vue-draggable-resizable/dist/VueDraggableResizable.css";
 
+Vue.component("multi-select", VueMultiselect);
 Vue.component("vue-draggable-resizable", VueDraggableResizable);
 
 const i18n = createI18n();

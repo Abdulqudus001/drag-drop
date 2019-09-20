@@ -190,7 +190,29 @@
         </v-list-tile>
       </template>
       <v-spacer class="mb-5"></v-spacer>
-      <div class="shapes">
+      <div class="flows">
+        <ul>
+          <li>
+            <p>Add flow</p>
+            <v-btn fab class="fab" @click="addFlow">
+              <v-icon color="#000">add</v-icon>
+            </v-btn>
+          </li>
+          <li
+            class="flow"
+            :id="`flow${index}`"
+            v-for="(flow, index) in flows"
+            :key="flow"
+            @click="changeFlow(flow, index)"
+          >
+            {{ flow }}
+            <v-btn fab class="flow-fab" @click="removeFlow(index)">
+              <v-icon color="#000">close</v-icon>
+            </v-btn>
+          </li>
+        </ul>
+      </div>
+      <!-- <div class="shapes">
         <div
           class="square"
           id="square"
@@ -209,7 +231,7 @@
           draggable="true"
           @dragstart="drag($event)"
         ></div>
-      </div>
+      </div> -->
     </v-list>
     <div
       class="sidebar-background"
@@ -225,6 +247,8 @@ import { camel } from "@/utils/helpers";
 export default {
   data() {
     return {
+      flows: ["Flow 1"],
+      count: 1,
       items: appDrawerItems,
       dark: false,
       logo: "/static/vuse-circle-white.svg"
@@ -269,6 +293,20 @@ export default {
     }
   },
   methods: {
+    addFlow() {
+      this.flows.push(`Flow ${this.count + 1}`);
+      this.count++;
+    },
+    changeFlow(flow, id) {
+      document.querySelectorAll(".flow").forEach(node => {
+        node.classList.remove("selected");
+      });
+      document.querySelector(`#flow${id}`).classList.add("selected");
+      this.$emit("changeFlow", [this.flows, flow]);
+    },
+    removeFlow(index) {
+      this.flows.splice(index, 1);
+    },
     drag(ev) {
       ev.dataTransfer.setData("text/html", ev.target.id);
     },
@@ -341,6 +379,54 @@ export default {
 }
 .rect {
   border-radius: 15%;
+}
+.flows ul {
+  list-style-type: none;
+}
+.flow {
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.flows ul li {
+  margin: 15px 0;
+  display: flex;
+  color: #fff;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flow:hover {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 7px 10px;
+  border-radius: 5px;
+}
+
+.flow.selected {
+  background: rgba(255, 255, 255, 0.1);
+  padding: 7px 0px;
+  border-radius: 5px;
+}
+
+.flows p {
+  margin: 0;
+}
+.fab {
+  width: 30px;
+  height: 30px;
+}
+
+.flow-fab {
+  width: 20px;
+  height: 20px;
+}
+
+.flow-fab i {
+  font-size: 16px;
+}
+
+.fab i,
+.flow-fab i {
+  color: #000 !important;
 }
 </style>
 <style scoped lang="stylus">

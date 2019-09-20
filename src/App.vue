@@ -1,9 +1,9 @@
 <template>
   <v-app :dark="colorScheme.dark" :class="colorScheme.scheme">
     <router-view name="header" />
-    <router-view name="sidebar" />
+    <router-view @changeFlow="changeFlow" name="sidebar" />
     <v-content>
-      <router-view />
+      <router-view :flows="flows" :flow="flow" />
     </v-content>
     <!-- <router-view name="footer" /> -->
     <app-settings
@@ -22,6 +22,8 @@ import AppSettings from "@/components/AppSettings";
 export default {
   data() {
     return {
+      flows: ["Flow 1"],
+      flow: "Flow 1",
       subDrawer: false
     };
   },
@@ -34,9 +36,14 @@ export default {
     AppSettings
   },
   methods: {
+    changeFlow([flows, flow]) {
+      this.flows = flows;
+      this.flow = flow;
+    },
     handleSubdrawer(value) {
       this.subDrawer = value;
     }
   }
 };
 </script>
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
