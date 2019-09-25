@@ -605,7 +605,7 @@ export default {
       transparent
     );
   background-repeat: repeat;
-  background-size: 30px 30px;
+  background-size: 2% 2%;
 }
 .nav {
   width: 200px;
