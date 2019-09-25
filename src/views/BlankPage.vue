@@ -6,7 +6,10 @@
           <app-canvas
             v-for="canvas in flows"
             :key="canvas"
+            :flow="flow"
             v-show="canvas == flow"
+            @addLine="addLine"
+            :lines="lines"
             >{{ canvas }}</app-canvas
           >
         </v-flex>
@@ -49,8 +52,14 @@ export default {
           text: "Blank",
           disabled: false
         }
-      ]
+      ],
+      lines: []
     };
+  },
+  methods: {
+    addLine(lines) {
+      this.lines = [...this.lines, ...lines];
+    }
   }
 };
 </script>

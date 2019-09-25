@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas" id="canvas" @scroll="positionLine">
+  <div class="canvas" :id="flow" @scroll="positionLine">
     <div class="nav">
       <ul>
         <li id="audio" draggable="true" @dragstart="dragFlow($event)">Audio</li>
@@ -32,7 +32,7 @@
         :y="item.y"
         class-name="flow"
         class-name-handle="custom-handle"
-        :id="`vdr${item.id}`"
+        :id="`vdr-${item.id}`"
         :draggable="item.draggable"
         :parent="true"
         :grid="[20, 20]"
@@ -283,6 +283,7 @@
 // eslint-disable-next-line
 import VueDraggableResizable from "vue-draggable-resizable";
 export default {
+  props: ["flow", "lines"],
   data() {
     return {
       width: 60,
@@ -357,7 +358,7 @@ export default {
       shapeCount: 1,
       shapes: [
         {
-          id: `trigger0`,
+          id: `${this.flow}trigger0`,
           data: "trigger",
           name: "trigger",
           x: 45,
@@ -439,6 +440,7 @@ export default {
       lines.forEach(line => {
         line.style.zoom = div.style.zoom;
       });
+      this.$emit("addLine", this.line);
     },
     drop(ev) {
       const zoom = document.getElementById("div1").style.zoom || 100;
@@ -448,7 +450,7 @@ export default {
         var data = ev.dataTransfer.getData("text/html");
         if (data) {
           this.shapes.push({
-            id: `${data}${this.shapeCount}`,
+            id: `${this.flow}-${data}${this.shapeCount}`,
             data: data,
             name: data,
             x: ev.offsetX / zoomInt,
@@ -509,8 +511,10 @@ export default {
       let zoom = document.querySelector("#div1").style.zoom;
       // Zoom the connector
       let lines = document.querySelectorAll(".leader-line");
-      if (zoom == "50%") {
+      if (zoom == "60%") {
         div.style.margin = "0 auto";
+      } else if (zoom == "30%") {
+        div.style.backgroundSize = "10% 10%";
       }
       if (!zoom) {
         div.style.zoom = "100%";
@@ -560,6 +564,16 @@ export default {
         });
       }
     }
+  },
+  updated() {
+    this.lines.forEach(line => {
+      const id = line.end.id.split("-")[1];
+      if (id != this.flow) {
+        line.hide();
+      } else {
+        line.show();
+      }
+    });
   }
 };
 </script>
