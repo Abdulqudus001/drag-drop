@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="canvas" id="canvas" @scroll="positionLine">
     <div class="nav">
       <ul>
         <li id="audio" draggable="true" @dragstart="dragFlow($event)">Audio</li>
@@ -33,10 +33,11 @@
         class-name="flow"
         class-name-handle="custom-handle"
         :id="`vdr${item.id}`"
+        :draggable="item.draggable"
         :parent="true"
         :grid="[20, 20]"
-        @dragging="onDrag"
-        @resizing="onResize"
+        @dragging="positionLine"
+        @resizing="positionLine"
         @activated="activated(index)"
         @deactivated="item.showCircle = false"
         :active="item.showFooter"
@@ -44,14 +45,16 @@
         <div
           draggable="true"
           class="connect-arrow"
-          @dragstart="drag($event)"
+          @dragstart.stop="drag($event, index)"
+          @mouseenter="disableDrag"
+          @mouseleave="enableDrag"
           id="drag"
           v-show="item.showCircle"
         ></div>
         <div
           class="content"
           :id="item.id"
-          @drop="dropArrow(item.id, $event)"
+          @drop="dropArrow(item.id, $event, index)"
           @dragover="allowDrop($event)"
         >
           <div :id="item.id" class="content__header">
@@ -351,7 +354,7 @@ export default {
       type: ["inbound", "outbound"],
       dialTypes: ["Queue", "Queue"],
       queueTypes: ["Queue1", "Queue2"],
-      shapeCount: 0,
+      shapeCount: 1,
       shapes: [
         {
           id: `trigger0`,
@@ -361,6 +364,7 @@ export default {
           y: 18,
           title: "Trigger",
           description: "Description",
+          draggable: true,
           showFooter: false,
           showCircle: false,
           model: {
@@ -374,18 +378,12 @@ export default {
       start: "",
       end: "",
       showCircle: false,
-      showFooter: false
+      showFooter: false,
+      zoom: ""
     };
   },
   methods: {
-    onResize() {
-      if (this.line) {
-        this.line.forEach(line => {
-          line.position();
-        });
-      }
-    },
-    onDrag() {
+    positionLine() {
       if (this.line) {
         this.line.forEach(line => {
           line.position();
@@ -399,6 +397,16 @@ export default {
     dragFlow(ev) {
       ev.dataTransfer.setData("text/html", ev.target.id);
     },
+    disableDrag() {
+      this.shapes.forEach(shape => {
+        shape.draggable = false;
+      });
+    },
+    enableDrag() {
+      this.shapes.forEach(shape => {
+        shape.draggable = true;
+      });
+    },
     drag(ev) {
       ev.stopPropagation();
       ev.dataTransfer.setData("text", "foo");
@@ -407,9 +415,11 @@ export default {
     allowDrop(ev) {
       ev.preventDefault();
     },
-    dropArrow(id, ev) {
+    dropArrow(id, ev, index) {
+      // this.shapes[index].draggable = true;
       this.shapes.forEach(shape => {
         shape.showFooter = false;
+        shape.draggable = true;
       });
       ev.preventDefault();
       this.end = ev.target.parentNode.id;
@@ -423,9 +433,16 @@ export default {
           size: 2
         }
       );
-      this.line.splice(id, 1, line);
+      this.line.splice(index, 1, line);
+      let div = document.querySelector("#div1");
+      let lines = document.querySelectorAll(".leader-line");
+      lines.forEach(line => {
+        line.style.zoom = div.style.zoom;
+      });
     },
     drop(ev) {
+      const zoom = document.getElementById("div1").style.zoom || 100;
+      const zoomInt = parseInt(zoom) / 100;
       ev.preventDefault();
       if (ev.target.id != "drag") {
         var data = ev.dataTransfer.getData("text/html");
@@ -434,9 +451,10 @@ export default {
             id: `${data}${this.shapeCount}`,
             data: data,
             name: data,
-            x: ev.offsetX,
-            y: ev.offsetY,
+            x: ev.offsetX / zoomInt,
+            y: ev.offsetY / zoomInt,
             title: `${data.toUpperCase()}`,
+            draggable: true,
             description: "Description",
             showFooter: false,
             showCircle: false,
@@ -451,7 +469,7 @@ export default {
         shape.showFooter = false;
       });
 
-      this.shapes[id].showFooter = true;
+      // this.shapes[id].showFooter = true;
       this.shapes[id].showCircle = true;
     },
     deActivated(id) {
@@ -487,45 +505,115 @@ export default {
       this.line.splice(index, 1);
     },
     zoomIn() {
-      let div = document.querySelector("body");
-      let zoom = document.querySelector("body").style.zoom;
+      let div = document.querySelector("#div1");
+      let zoom = document.querySelector("#div1").style.zoom;
+      // Zoom the connector
+      let lines = document.querySelectorAll(".leader-line");
+      if (zoom == "50%") {
+        div.style.margin = "0 auto";
+      }
       if (!zoom) {
         div.style.zoom = "100%";
+        if (lines) {
+          lines.forEach(line => {
+            line.style.zoom = "100%";
+          });
+        }
       }
-      div.style.zoom = `${parseInt(div.style.zoom) + 10}%`;
-      this.line.forEach(line => {
-        line.position();
-      });
+      if (parseInt(zoom) >= 30) {
+        div.style.zoom = `${parseInt(div.style.zoom) + 10}%`;
+        if (lines) {
+          lines.forEach(line => {
+            line.style.zoom = `${parseInt(line.style.zoom) + 10}%`;
+          });
+        }
+        this.line.forEach(line => {
+          line.position();
+        });
+      }
     },
     zoomOut() {
-      let div = document.querySelector("body");
-      let zoom = document.querySelector("body").style.zoom;
+      // Zoom the connector
+      let lines = document.querySelectorAll(".leader-line");
+      let div = document.querySelector("#div1");
+      let zoom = document.querySelector("#div1").style.zoom;
+      if (zoom == "50%") {
+        div.style.margin = "0 auto";
+      }
       if (!zoom) {
         div.style.zoom = "100%";
+        if (lines) {
+          lines.forEach(line => {
+            line.style.zoom = "100%";
+          });
+        }
       }
-      div.style.zoom = `${parseInt(div.style.zoom) - 10}%`;
+      if (zoom != "30%") {
+        div.style.zoom = `${parseInt(div.style.zoom) - 10}%`;
+        if (lines) {
+          lines.forEach(line => {
+            line.style.zoom = `${parseInt(line.style.zoom) - 10}%`;
+          });
+        }
+        this.line.forEach(line => {
+          line.position();
+        });
+      }
     }
   }
 };
 </script>
 
 <style>
+.canvas {
+  overflow: auto;
+  overflow-y: auto;
+}
 .multiselect {
   width: 60%;
 }
 #div1 {
-  width: 800px;
-  max-width: calc(100% - 200px);
-  min-height: 500px;
+  width: 1600px;
+  height: 1600px;
+  /* max-width: calc(100% - 200px); */
+  min-height: calc(100vh - 100px);
   position: relative;
   left: 200px;
+  overflow: auto;
+  background-image: linear-gradient(
+      0deg,
+      transparent 24%,
+      rgba(0, 0, 0, 0.1) 25%,
+      rgba(0, 0, 0, 0.1) 26%,
+      transparent 27%,
+      transparent 74%,
+      rgba(0, 0, 0, 0.1) 75%,
+      rgba(0, 0, 0, 0.1) 76%,
+      transparent 77%,
+      transparent
+    ),
+    linear-gradient(
+      90deg,
+      transparent 24%,
+      rgba(0, 0, 0, 0.1) 25%,
+      rgba(0, 0, 0, 0.1) 26%,
+      transparent 27%,
+      transparent 74%,
+      rgba(0, 0, 0, 0.1) 75%,
+      rgba(0, 0, 0, 0.1) 76%,
+      transparent 77%,
+      transparent
+    );
+  background-repeat: repeat;
+  background-size: 30px 30px;
 }
 .nav {
   width: 200px;
-  position: absolute;
-  left: 0;
+  z-index: 2;
+  position: fixed;
+  margin-left: -25px;
   bottom: 0;
-  top: 0;
+  top: 65px;
   background: #fff;
   box-shadow: 0px 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
