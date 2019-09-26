@@ -9,6 +9,7 @@
             :flow="flow"
             v-show="canvas == flow"
             @addLine="addLine"
+            @removeLine="removeLine"
             :lines="lines"
             >{{ canvas }}</app-canvas
           >
@@ -59,6 +60,10 @@ export default {
   methods: {
     addLine(lines) {
       this.lines = [...this.lines, ...lines];
+      this.lines = [...new Set(this.lines)];
+    },
+    removeLine(index) {
+      this.lines.splice(index, 1);
     }
   }
 };

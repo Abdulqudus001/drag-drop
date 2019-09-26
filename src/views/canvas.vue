@@ -32,7 +32,7 @@
         :y="item.y"
         class-name="flow"
         class-name-handle="custom-handle"
-        :id="`vdr-${item.id}`"
+        :id="item.id"
         :draggable="item.draggable"
         :parent="true"
         :grid="[20, 20]"
@@ -41,6 +41,7 @@
         @activated="activated(index)"
         @deactivated="item.showCircle = false"
         :active="item.showFooter"
+        @dblclick="item.showFooter = !item.showFooter"
       >
         <div
           draggable="true"
@@ -417,7 +418,6 @@ export default {
       ev.preventDefault();
     },
     dropArrow(id, ev, index) {
-      // this.shapes[index].draggable = true;
       this.shapes.forEach(shape => {
         shape.showFooter = false;
         shape.draggable = true;
@@ -450,7 +450,7 @@ export default {
         var data = ev.dataTransfer.getData("text/html");
         if (data) {
           this.shapes.push({
-            id: `${this.flow}-${data}${this.shapeCount}`,
+            id: `vdr-${this.flow}-${data}${this.shapeCount}`,
             data: data,
             name: data,
             x: ev.offsetX / zoomInt,
@@ -470,8 +470,7 @@ export default {
       this.shapes.forEach(shape => {
         shape.showFooter = false;
       });
-
-      // this.shapes[id].showFooter = true;
+      this.shapes[id].showFooter = true;
       this.shapes[id].showCircle = true;
     },
     deActivated(id) {
@@ -485,8 +484,22 @@ export default {
         });
       }
     },
-    removeFlow(index) {
-      this.shapes.splice(index, 1);
+    removeFlow(flowIndex) {
+      if (this.lines.length > 0) {
+        this.lines.forEach((line, index) => {
+          const endId = line.end.id;
+          const startId = line.start.id;
+          if (
+            startId == this.shapes[flowIndex].id ||
+            endId == this.shapes[flowIndex].id
+          ) {
+            line.remove();
+            this.$emit("removeLine", index);
+            this.line.splice(index, 1);
+          }
+        });
+      }
+      this.shapes.splice(flowIndex, 1);
     },
     highlightFlow(id) {
       document.getElementById(id).classList.add("hover");
@@ -566,14 +579,16 @@ export default {
     }
   },
   updated() {
-    this.lines.forEach(line => {
-      const id = line.end.id.split("-")[1];
-      if (id != this.flow) {
-        line.hide();
-      } else {
-        line.show();
-      }
-    });
+    if (this.lines) {
+      this.lines.forEach(line => {
+        const id = line.end.id.split("-")[1];
+        if (id != this.flow) {
+          line.hide();
+        } else {
+          line.show();
+        }
+      });
+    }
   }
 };
 </script>
@@ -623,11 +638,11 @@ export default {
 }
 .nav {
   width: 200px;
-  z-index: 2;
+  z-index: 1;
   position: fixed;
-  margin-left: -25px;
+  margin-left: -23px;
   bottom: 0;
-  top: 65px;
+  top: 45px;
   background: #fff;
   box-shadow: 0px 2px 2px 0 rgba(0, 0, 0, 0.2);
 }
@@ -773,13 +788,13 @@ export default {
   cursor: se-resize;
 }
 .foot {
-  position: absolute;
+  position: fixed;
   bottom: 0px;
   box-shadow: 0px 2px 2px 2px rgba(0, 0, 0, 0.2);
-  left: 200px;
-  right: 0;
+  right: 20px;
   padding: 20px;
   background: #fff;
+  width: 700px;
 }
 
 .foot .close,
