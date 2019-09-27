@@ -1,5 +1,5 @@
 <template>
-  <div class="canvas" :id="flow" @scroll="positionLine">
+  <div class="canvas" :id="flow" :ref="flow" @scroll="positionLine">
     <div class="nav">
       <ul>
         <li id="audio" draggable="true" @dragstart="dragFlow($event)">Audio</li>
@@ -33,15 +33,15 @@
         class-name="flow"
         class-name-handle="custom-handle"
         :id="item.id"
+        :ref="item.id"
         :draggable="item.draggable"
         :parent="true"
         :grid="[20, 20]"
-        @dragging="positionLine"
-        @resizing="positionLine"
+        @dragging="positionLine(index)"
+        @resizing="positionLine(index)"
         @activated="activated(index)"
         @deactivated="item.showCircle = false"
         :active="item.showFooter"
-        @dblclick="item.showFooter = !item.showFooter"
       >
         <div
           draggable="true"
@@ -60,6 +60,9 @@
         >
           <div :id="item.id" class="content__header">
             <p>{{ item.title }}</p>
+            <v-icon @click.stop="item.showFooter = !item.showFooter"
+              >settings</v-icon
+            >
             <v-icon @click.stop="removeFlow(index)">close</v-icon>
           </div>
           <div :id="item.id" class="content__description">
@@ -283,6 +286,7 @@
 <script>
 // eslint-disable-next-line
 import VueDraggableResizable from "vue-draggable-resizable";
+import { isNumber } from "util";
 export default {
   props: ["flow", "lines"],
   data() {
@@ -359,7 +363,7 @@ export default {
       shapeCount: 1,
       shapes: [
         {
-          id: `${this.flow}trigger0`,
+          id: `vdr-${this.flow}-trigger0`,
           data: "trigger",
           name: "trigger",
           x: 45,
@@ -385,11 +389,40 @@ export default {
     };
   },
   methods: {
-    positionLine() {
+    showFlowFooter(index) {
+      this.shapes.forEach(shape => {
+        shape.showFooter = false;
+      });
+      this.shapes[index].showFooter = true;
+    },
+    positionLine(flowIndex) {
+      if (isNumber(flowIndex)) {
+        this.scrollPage(flowIndex);
+      }
       if (this.line) {
         this.line.forEach(line => {
           line.position();
         });
+      }
+    },
+    scrollPage(index) {
+      const flowId = this.shapes[index].id,
+        flow = this.$refs[`${flowId}`],
+        div = this.$refs[`${this.flow}`],
+        flowBottom = flow[0].$el.getBoundingClientRect().bottom,
+        flowRight = flow[0].$el.getBoundingClientRect().right,
+        screenBottom = window.innerHeight,
+        screenRight = window.innerWidth;
+      if (screenBottom - flowBottom < 200) {
+        window.scrollBy(0, 50);
+        this.shapes[index].showFooter = false;
+      } else if (screenBottom - flowBottom > 400) {
+        window.scrollBy(0, -50);
+      }
+      if (screenRight - flowRight < 200) {
+        div.scrollBy(50, 0);
+      } else if (screenRight - flowRight > 500) {
+        div.scrollBy(-50, 0);
       }
     },
     addFile(event, index) {
@@ -467,10 +500,10 @@ export default {
       }
     },
     activated(id) {
-      this.shapes.forEach(shape => {
-        shape.showFooter = false;
-      });
-      this.shapes[id].showFooter = true;
+      // this.shapes.forEach(shape => {
+      //   shape.showFooter = false;
+      // });
+      // this.shapes[id].showFooter = true;
       this.shapes[id].showCircle = true;
     },
     deActivated(id) {
