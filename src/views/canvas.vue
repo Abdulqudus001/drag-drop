@@ -13,6 +13,18 @@
           Trigger
         </li>
       </ul>
+      <ul>
+        <li class="header">Connections</li>
+        <li
+          v-for="(item, index) in line"
+          :key="item.id"
+          @mouseenter="highlightLine(index)"
+          @mouseleave="unHighlightLine(index)"
+        >
+          Connection{{ index }}
+          <v-icon @click="removeLine(index)" class="close">close</v-icon>
+        </li>
+      </ul>
     </div>
     <div
       id="div1"
@@ -451,29 +463,42 @@ export default {
       ev.preventDefault();
     },
     dropArrow(id, ev, index) {
+      let isDroppable = true;
       this.shapes.forEach(shape => {
         shape.showFooter = false;
         shape.draggable = true;
       });
       ev.preventDefault();
       this.end = ev.target.parentNode.id;
-      let line = new window.LeaderLine(
-        document.getElementById(this.start),
-        document.getElementById(this.end),
-        {
-          path: "grid",
-          color: "#000",
-          endPlus: "arrow3",
-          size: 2
+      this.line.forEach(line => {
+        let end = line.end.id,
+          start = line.start.id;
+        if (
+          (start == this.end && end == this.start) ||
+          (start == this.start && end == this.end)
+        ) {
+          isDroppable = false;
         }
-      );
-      this.line.splice(index, 1, line);
-      let div = document.querySelector("#div1");
-      let lines = document.querySelectorAll(".leader-line");
-      lines.forEach(line => {
-        line.style.zoom = div.style.zoom;
       });
-      this.$emit("addLine", this.line);
+      if (isDroppable) {
+        let line = new window.LeaderLine(
+          document.getElementById(this.start),
+          document.getElementById(this.end),
+          {
+            path: "grid",
+            color: "#000",
+            endPlus: "arrow3",
+            size: 2
+          }
+        );
+        this.line.splice(index, 1, line);
+        let div = document.querySelector("#div1");
+        let lines = document.querySelectorAll(".leader-line");
+        lines.forEach(line => {
+          line.style.zoom = div.style.zoom;
+        });
+        this.$emit("addLine", this.line);
+      }
     },
     drop(ev) {
       const zoom = document.getElementById("div1").style.zoom || 100;
@@ -550,6 +575,7 @@ export default {
     },
     removeLine(index) {
       this.line[index].remove();
+      this.$emit("removeLine", index);
       this.line.splice(index, 1);
     },
     zoomIn() {
@@ -612,7 +638,7 @@ export default {
     }
   },
   updated() {
-    if (this.lines) {
+    if (this.lines.length > 0) {
       this.lines.forEach(line => {
         const id = line.end.id.split("-")[1];
         if (id != this.flow) {
@@ -633,6 +659,10 @@ export default {
 }
 .multiselect {
   width: 60%;
+}
+.header {
+  border-width: 1px 0 1px;
+  border-style: solid;
 }
 #div1 {
   width: 1600px;
@@ -678,6 +708,7 @@ export default {
   top: 45px;
   background: #fff;
   box-shadow: 0px 2px 2px 0 rgba(0, 0, 0, 0.2);
+  overflow-y: auto;
 }
 
 .nav ul {
