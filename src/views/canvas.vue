@@ -13,18 +13,6 @@
           Trigger
         </li>
       </ul>
-      <!-- <ul>
-        <li class="header">Connections</li>
-        <li
-          v-for="(item, index) in line"
-          :key="item.id"
-          @mouseenter="highlightLine(index)"
-          @mouseleave="unHighlightLine(index)"
-        >
-          Connection{{ index }}
-          <v-icon @click="removeLine(index)" class="close">close</v-icon>
-        </li>
-      </ul> -->
     </div>
     <div
       id="div1"
@@ -293,33 +281,6 @@
         </v-tab-item>
       </v-tabs>
     </div>
-    <div
-      v-for="(line, index) in connectors"
-      :key="line.id"
-      class="foot"
-      v-show="line.showLineOptions"
-    >
-      <v-layout>
-        <v-btn @click="removeLine(index)">
-          <v-icon>delete</v-icon>
-        </v-btn>
-        <v-flex sm8>
-          <v-slider
-            label="Size"
-            :max="10"
-            v-model="line.size"
-            @change="changeLine($event, line.line, line.size)"
-          ></v-slider>
-        </v-flex>
-        <v-flex sm4>
-          <v-checkbox
-            v-model="line.showLabel"
-            @change="toggleLabel($event, line.line, index)"
-            :label="line.showLabel ? 'Hide Label' : 'Show Label'"
-          ></v-checkbox>
-        </v-flex>
-      </v-layout>
-    </div>
   </div>
 </template>
 <script>
@@ -428,21 +389,18 @@ export default {
       connectors: []
     };
   },
-  methods: {
-    changeLine(event, line, size) {
-      line.size = size;
-    },
-    toggleLabel(event, line, index) {
-      if (!event) {
-        line.startLabel = window.LeaderLine.pathLabel({
-          text: "Text",
-          fontSize: 0,
-          color: "transparent"
+  mounted() {
+    window.addEventListener("keypress", e => {
+      if (e.key == "Delete") {
+        this.line.forEach((line, index) => {
+          if (line.outline == true) {
+            this.removeLine(index);
+          }
         });
-      } else {
-        line.startLabel = window.LeaderLine.pathLabel(`Line${index}`);
       }
-    },
+    });
+  },
+  methods: {
     showFlowFooter(index) {
       this.shapes.forEach(shape => {
         shape.showFooter = false;
@@ -530,27 +488,17 @@ export default {
             path: "grid",
             color: "#000",
             endPlus: "arrow3",
-            size: 2,
-            startLabel: window.LeaderLine.pathLabel(`Line${this.line.length}`)
+            size: 2
+            // startLabel: window.LeaderLine.pathLabel(`Line${this.line.length}`)
           }
         );
         this.line.splice(index, 1, line);
-        this.connectors.push({
-          line,
-          showLineOptions: false,
-          showLabel: true,
-          id: this.connectors.length,
-          size: 2
-        });
         let div = document.querySelector("#div1");
         let lines = document.querySelectorAll(".leader-line");
         lines.forEach((line, index) => {
           line.style.zoom = div.style.zoom;
           line.addEventListener("click", () => {
-            this.connectors.forEach(connector => {
-              connector.showLineOptions = false;
-            });
-            this.connectors[index].showLineOptions = true;
+            this.highlightLine(index);
           });
         });
         this.$emit("addLine", this.line);
@@ -596,8 +544,8 @@ export default {
         this.shapes.forEach(shape => {
           shape.showFooter = false;
         });
-        this.connectors.forEach(connector => {
-          connector.showLineOptions = false;
+        this.line.forEach(line => {
+          line.outline = false;
         });
       }
     },
@@ -625,6 +573,9 @@ export default {
       document.getElementById(id).classList.remove("hover");
     },
     highlightLine(index) {
+      this.line.forEach(line => {
+        line.outline = false;
+      });
       this.line[index].outline = true;
       this.line[index].outlineColor = "red";
       this.line[index].outlineSize = "4";
@@ -634,7 +585,6 @@ export default {
     },
     removeLine(index) {
       this.line[index].remove();
-      this.connectors.splice(index, 1);
       this.$emit("removeLine", index);
       this.line.splice(index, 1);
     },
