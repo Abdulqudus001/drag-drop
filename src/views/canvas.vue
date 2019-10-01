@@ -462,7 +462,7 @@ export default {
     allowDrop(ev) {
       ev.preventDefault();
     },
-    dropArrow(id, ev, index) {
+    dropArrow(id, ev) {
       let isDroppable = true;
       this.shapes.forEach(shape => {
         shape.showFooter = false;
@@ -492,7 +492,7 @@ export default {
             // startLabel: window.LeaderLine.pathLabel(`Line${this.line.length}`)
           }
         );
-        this.line.splice(index, 1, line);
+        this.line.splice(this.line.length, 1, line);
         let div = document.querySelector("#div1");
         let lines = document.querySelectorAll(".leader-line");
         lines.forEach((line, index) => {
@@ -587,6 +587,12 @@ export default {
       this.line[index].remove();
       this.$emit("removeLine", index);
       this.line.splice(index, 1);
+      let lines = document.querySelectorAll(".leader-line");
+      lines.forEach((line, index) => {
+        line.addEventListener("click", () => {
+          this.highlightLine(index);
+        });
+      });
     },
     zoomIn() {
       let div = document.querySelector("#div1");
