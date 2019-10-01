@@ -390,7 +390,7 @@ export default {
     };
   },
   mounted() {
-    window.addEventListener("keypress", e => {
+    window.addEventListener("keyup", e => {
       if (e.key == "Delete") {
         this.line.forEach((line, index) => {
           if (line.outline == true) {
