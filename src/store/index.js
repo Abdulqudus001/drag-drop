@@ -9,7 +9,11 @@ import swatch from "./modules/swatch";
 Vue.use(Vuex);
 
 export const store = new Vuex.Store({
-  state: {},
+  state: {
+    jsonData: {
+      name: "Hello"
+    }
+  },
   getters,
   mutations,
   actions,

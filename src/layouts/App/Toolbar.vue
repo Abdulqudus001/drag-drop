@@ -31,14 +31,20 @@
       </v-tooltip>
     </v-btn>
     <!--  -->
-    <v-btn icon :to="{ name: 'BlankPage' }" flat>
+    <!-- <v-btn icon :to="{ name: 'BlankPage' }" flat>
       <v-icon>contacts</v-icon>
     </v-btn>
     <v-btn icon :to="{ name: 'BlankPage' }" flat>
       <v-icon>chat</v-icon>
-    </v-btn>
+    </v-btn> -->
     <v-spacer></v-spacer>
-    <v-menu offset-y>
+    <v-btn icon @click="generateJSON">
+      <v-icon>code</v-icon>
+    </v-btn>
+    <v-btn icon :href="getBlob" target="_blank" download="flow.json">
+      <v-icon>save</v-icon>
+    </v-btn>
+    <!-- <v-menu offset-y>
       <v-avatar slot="activator" size="40">
         <img :src="authUser.avatar" :alt="authUser.name" />
       </v-avatar>
@@ -80,7 +86,7 @@
           <v-list-tile-title>Sign Out</v-list-tile-title>
         </v-list-tile>
       </v-list>
-    </v-menu>
+    </v-menu> -->
   </v-toolbar>
 </template>
 <script>
@@ -104,12 +110,27 @@ export default {
     }),
     authUser() {
       return authUser;
+    },
+    getBlob() {
+      const json = this.$store.state.jsonData;
+      let contentType = "";
+      let dData = "";
+      let blob;
+      let url;
+      contentType = "application/json";
+      dData = JSON.stringify(json, null, 2);
+      blob = new Blob([dData], { type: contentType });
+      url = window.URL.createObjectURL(blob);
+      return url;
     }
   },
   methods: {
     toggleMiniVariantMode() {
       this.$store.dispatch("toggleMiniVariantMode");
       this.$store.dispatch("toggleMiniVarient");
+    },
+    generateJSON() {
+      this.$emit("generateJSON");
     }
   }
 };

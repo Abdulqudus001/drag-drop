@@ -11,6 +11,7 @@
             @addLine="addLine"
             @removeLine="removeLine"
             :lines="lines"
+            :showJSON="showJSON"
             >{{ canvas }}</app-canvas
           >
         </v-flex>
@@ -31,6 +32,9 @@ export default {
     flow: {
       type: String,
       default: "Flow 1"
+    },
+    showJSON: {
+      type: Boolean
     }
   },
   data() {

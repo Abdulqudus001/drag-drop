@@ -1,5 +1,6 @@
 <template>
   <div class="canvas" :id="flow" :ref="flow" @scroll="positionLine">
+    <json-comp :json="flowJSON" v-show="showJSONComponent"></json-comp>
     <div class="nav">
       <ul>
         <li id="audio" draggable="true" @dragstart="dragFlow($event)">Audio</li>
@@ -95,7 +96,7 @@
               <multi-select
                 id="dial-type"
                 :options="dialTypes"
-                v-model="footer.model.dialType"
+                v-model="footer.settings.dialType"
                 placeholder="Select Dial Type"
               ></multi-select>
             </div>
@@ -104,14 +105,14 @@
               <multi-select
                 id="queue"
                 :options="queueTypes"
-                v-model="footer.model.queueType"
+                v-model="footer.settings.queueType"
                 placeholder="Select type"
               ></multi-select>
             </div>
             <div class="input">
               <label for="caller">DID</label>
               <input
-                v-model="footer.model.callerId"
+                v-model="footer.settings.callerId"
                 type="text"
                 name="caller"
                 id="caller"
@@ -125,7 +126,7 @@
               <multi-select
                 id="connection"
                 :options="connections"
-                v-model="footer.model.connection"
+                v-model="footer.settings.connection"
                 placeholder="Select Connection"
               ></multi-select>
             </div>
@@ -134,14 +135,14 @@
               <multi-select
                 id="type"
                 :options="type"
-                v-model="footer.model.type"
+                v-model="footer.settings.type"
                 placeholder="Select type"
               ></multi-select>
             </div>
             <div class="input">
               <label for="desc">DID</label>
               <input
-                v-model="footer.model.did"
+                v-model="footer.settings.did"
                 type="text"
                 name="desc"
                 id="desc"
@@ -154,7 +155,7 @@
               <label for="validation">Expression</label>
               <textarea
                 placeholder="Enter description text"
-                v-model="footer.model.expression"
+                v-model="footer.settings.expression"
                 name="validation"
                 id="validation"
                 cols="44"
@@ -180,7 +181,7 @@
                   <div class="input">
                     <label for="timeout">Timeout</label>
                     <input
-                      v-model.number="footer.model.timeout"
+                      v-model.number="footer.settings.timeout"
                       type="number"
                       name="timeout"
                       id="timeout"
@@ -193,13 +194,13 @@
                   <v-layout row wrap>
                     <v-flex sm6>
                       <v-checkbox
-                        v-model="footer.model.skip"
+                        v-model="footer.settings.skip"
                         label="Skip on DTMF"
                       ></v-checkbox>
                     </v-flex>
                     <v-flex sm6>
                       <v-checkbox
-                        v-model="footer.model.expect"
+                        v-model="footer.settings.expect"
                         label="Expect DTMF"
                       ></v-checkbox>
                     </v-flex>
@@ -209,7 +210,7 @@
                   <div class="input">
                     <label for="repeat">Repeat</label>
                     <input
-                      v-model.number="footer.model.repeat"
+                      v-model.number="footer.settings.repeat"
                       type="number"
                       name="repeat"
                       id="repeat"
@@ -231,7 +232,7 @@
                   </v-layout>
                 </v-flex>
                 <v-flex sm10 class="menu-item">
-                  <v-layout v-for="menu in footer.model" :key="menu.id">
+                  <v-layout v-for="menu in footer.settings" :key="menu.id">
                     <v-flex sm4>
                       <input
                         class="menu-value"
@@ -287,8 +288,10 @@
 // eslint-disable-next-line
 import VueDraggableResizable from "vue-draggable-resizable";
 import { isNumber } from "util";
+import JsonComp from "@/views/json.vue";
 export default {
-  props: ["flow", "lines"],
+  props: ["flow", "lines", "showJSON"],
+  components: { JsonComp },
   data() {
     return {
       width: 60,
@@ -373,7 +376,7 @@ export default {
           draggable: true,
           showFooter: false,
           showCircle: false,
-          model: {
+          settings: {
             connection: "",
             type: "",
             did: ""
@@ -386,7 +389,9 @@ export default {
       showCircle: false,
       showFooter: false,
       zoom: "",
-      connectors: []
+      connectors: [],
+      flowJSON: {},
+      showJSONComponent: false
     };
   },
   mounted() {
@@ -522,7 +527,7 @@ export default {
             description: "Description",
             showFooter: false,
             showCircle: false,
-            model: { ...this.options[data] }
+            settings: { ...this.options[data] }
           });
           this.shapeCount += 1;
         }
@@ -651,6 +656,24 @@ export default {
           line.position();
         });
       }
+    },
+    generateJSON() {
+      let values = {};
+      const flows = this.shapes.slice(1);
+      values = { ...flows };
+      const json = {
+        flow_id: this.flow,
+        flow_name: this.flow,
+        data: {
+          start: {
+            ...this.shapes[0],
+            flowType: "start"
+          },
+          values
+        }
+      };
+      this.flowJSON = json;
+      this.$store.dispatch("updateJSON", json);
     }
   },
   updated() {
@@ -663,6 +686,14 @@ export default {
           line.show();
         }
       });
+    }
+  },
+  watch: {
+    showJSON(val) {
+      this.showJSONComponent = val;
+      if (val) {
+        this.generateJSON();
+      }
     }
   }
 };

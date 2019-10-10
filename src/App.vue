@@ -1,9 +1,9 @@
 <template>
   <v-app :dark="colorScheme.dark" :class="colorScheme.scheme">
-    <router-view name="header" />
+    <router-view @generateJSON="generateJSON" name="header" />
     <router-view @changeFlow="changeFlow" name="sidebar" />
     <v-content>
-      <router-view :flows="flows" :flow="flow" />
+      <router-view :flows="flows" :flow="flow" :showJSON="showJSON" />
     </v-content>
     <!-- <router-view name="footer" /> -->
     <app-settings
@@ -24,7 +24,8 @@ export default {
     return {
       flows: ["Flow 1"],
       flow: "Flow 1",
-      subDrawer: false
+      subDrawer: false,
+      showJSON: false
     };
   },
   computed: {
@@ -42,6 +43,9 @@ export default {
     },
     handleSubdrawer(value) {
       this.subDrawer = value;
+    },
+    generateJSON() {
+      this.showJSON = !this.showJSON;
     }
   }
 };
