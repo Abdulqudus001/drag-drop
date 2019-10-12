@@ -54,6 +54,15 @@
           v-show="item.showCircle"
         ></div>
         <div
+          draggable="true"
+          class="connect-arrow-f"
+          @dragstart.stop="drag($event, index)"
+          @mouseenter="disableDrag"
+          @mouseleave="enableDrag"
+          id="drag-f"
+          v-show="item.showCircle"
+        ></div>
+        <div
           class="content"
           :id="item.id"
           @drop="dropArrow(item.id, $event, index)"
@@ -298,25 +307,6 @@ export default {
       height: 60,
       x: 0,
       y: 0,
-      page: {
-        title: "Blank Page",
-        headline: "Black Page",
-        description: `A blank page is good to quick-start from scratch.`
-      },
-      breadcrumbs: [
-        {
-          text: "Src",
-          disabled: false
-        },
-        {
-          text: "Views",
-          disabled: false
-        },
-        {
-          text: "Blank",
-          disabled: false
-        }
-      ],
       icon: {
         dial: "call",
         audio: "fa-volume-up",
@@ -380,6 +370,10 @@ export default {
             connection: "",
             type: "",
             did: ""
+          },
+          next: {
+            success: "",
+            failure: ""
           }
         }
       ],
@@ -391,7 +385,10 @@ export default {
       zoom: "",
       connectors: [],
       flowJSON: {},
-      showJSONComponent: false
+      showJSONComponent: false,
+      lineColor: "#000",
+      lineType: "success",
+      currentFlow: 0
     };
   },
   mounted() {
@@ -459,15 +456,24 @@ export default {
         shape.draggable = true;
       });
     },
-    drag(ev) {
+    drag(ev, index) {
       ev.stopPropagation();
       ev.dataTransfer.setData("text", "foo");
       this.start = ev.target.parentNode.id;
+      let el = ev.target.id;
+      if (el == "drag-f") {
+        this.lineColor = "#f00";
+        this.lineType = "failure";
+      } else {
+        this.lineColor = "#000";
+        this.lineType = "success";
+      }
+      this.currentFlow = index;
     },
     allowDrop(ev) {
       ev.preventDefault();
     },
-    dropArrow(id, ev) {
+    dropArrow(id, ev, index) {
       let isDroppable = true;
       this.shapes.forEach(shape => {
         shape.showFooter = false;
@@ -491,10 +497,9 @@ export default {
           document.getElementById(this.end),
           {
             path: "grid",
-            color: "#000",
+            color: this.lineColor,
             endPlus: "arrow3",
             size: 2
-            // startLabel: window.LeaderLine.pathLabel(`Line${this.line.length}`)
           }
         );
         this.line.splice(this.line.length, 1, line);
@@ -507,6 +512,19 @@ export default {
           });
         });
         this.$emit("addLine", this.line);
+        // Generate next state json
+        const flow = this.shapes[this.currentFlow];
+        if (flow.name != "validation" && flow.name != "menu") {
+          if (this.lineType == "success") {
+            flow.next.success = this.shapes[index].id;
+          } else {
+            flow.next.failure = this.shapes[index].id;
+          }
+        } else {
+          if (this.lineType == "failure") {
+            flow.next.failure = this.shapes[index].id;
+          }
+        }
       }
     },
     drop(ev) {
@@ -527,6 +545,9 @@ export default {
             description: "Description",
             showFooter: false,
             showCircle: false,
+            next: {
+              failure: ""
+            },
             settings: { ...this.options[data] }
           });
           this.shapeCount += 1;
@@ -581,9 +602,10 @@ export default {
       this.line.forEach(line => {
         line.outline = false;
       });
+      const color = this.lineColor == "#f00" ? "#000" : "#f00";
       this.line[index].outline = true;
-      this.line[index].outlineColor = "red";
-      this.line[index].outlineSize = "4";
+      this.line[index].outlineColor = color;
+      this.line[index].outlineSize = "5";
     },
     unHighlightLine(index) {
       this.line[index].outline = false;
@@ -661,6 +683,12 @@ export default {
       let values = {};
       const flows = this.shapes.slice(1);
       values = { ...flows };
+      const connections = this.line.map(line => {
+        return {
+          end: line.end.id,
+          start: line.start.id
+        };
+      });
       const json = {
         flow_id: this.flow,
         flow_name: this.flow,
@@ -669,7 +697,8 @@ export default {
             ...this.shapes[0],
             flowType: "start"
           },
-          values
+          values,
+          connections
         }
       };
       this.flowJSON = json;
@@ -815,7 +844,8 @@ body .leader-line {
   align-items: center;
 }
 
-.connect-arrow {
+.connect-arrow,
+.connect-arrow-f {
   position: absolute;
   display: flex;
   justify-content: center;
@@ -827,7 +857,8 @@ body .leader-line {
   top: -25px;
   border-radius: 50%;
 }
-.connect-arrow::after {
+.connect-arrow::after,
+.connect-arrow-f::after {
   content: "";
   width: 10px;
   height: 10px;
@@ -835,6 +866,13 @@ body .leader-line {
   border-radius: 50%;
   position: relative;
   top: 0px;
+}
+.connect-arrow-f {
+  bottom: 0;
+  top: 95%;
+}
+.connect-arrow-f::after {
+  border: 1px solid #d42708;
 }
 .custom-handle {
   display: block;
@@ -890,10 +928,12 @@ body .leader-line {
 }
 
 .custom-handle-bm {
+  display: none;
+  border: none;
   bottom: -10px;
   left: 50%;
   margin-left: -7px;
-  cursor: s-resize;
+  cursor: none;
 }
 
 .custom-handle-br {
