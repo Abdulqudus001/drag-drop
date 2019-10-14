@@ -830,6 +830,7 @@ body .leader-line {
   bottom: 0;
   left: 0;
   right: 0;
+  border-radius: 8px;
 }
 
 .content__header {
@@ -841,6 +842,7 @@ body .leader-line {
   align-items: center;
   justify-content: space-between;
   overflow-y: auto;
+  border-radius: 8px 8px 0 0;
 }
 
 .content__header p,
@@ -871,6 +873,7 @@ body .leader-line {
   margin-left: -15px;
   top: -25px;
   border-radius: 50%;
+  z-index: 1;
 }
 .connect-arrow::after,
 .connect-arrow-f::after {
@@ -880,6 +883,7 @@ body .leader-line {
   border: 1px solid #373737;
   border-radius: 50%;
   position: relative;
+  background: #fff;
   top: 0px;
 }
 .connect-arrow-f {
@@ -1058,5 +1062,6 @@ body .leader-line {
 .flow {
   border: 1px solid #373737;
   position: relative;
+  border-radius: 8px;
 }
 </style>
