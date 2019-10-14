@@ -70,9 +70,7 @@
         >
           <div :id="item.id" class="content__header">
             <p>{{ item.title }}</p>
-            <v-icon @click.stop="item.showFooter = !item.showFooter"
-              >settings</v-icon
-            >
+            <v-icon @click.stop="showFlowFooter(index)">settings</v-icon>
             <v-icon @click.stop="removeFlow(index)">close</v-icon>
           </div>
           <div :id="item.id" class="content__description">
@@ -237,11 +235,15 @@
                   <v-layout>
                     <v-flex sm4>Value</v-flex>
                     <v-flex sm6>Action</v-flex>
-                    <v-flex sm2><v-icon>add</v-icon></v-flex>
+                    <v-flex sm2
+                      ><v-icon @click="addMenuSettings(footer.settings, index)"
+                        >add</v-icon
+                      ></v-flex
+                    >
                   </v-layout>
                 </v-flex>
                 <v-flex sm10 class="menu-item">
-                  <v-layout v-for="menu in footer.settings" :key="menu.id">
+                  <v-layout v-for="(menu, i) in footer.settings" :key="menu.id">
                     <v-flex sm4>
                       <input
                         class="menu-value"
@@ -258,7 +260,9 @@
                       ></multi-select>
                     </v-flex>
                     <v-flex sm2
-                      ><v-icon>indeterminate_check_box</v-icon></v-flex
+                      ><v-icon @click="removeMenuSettings(index, i)"
+                        >indeterminate_check_box</v-icon
+                      ></v-flex
                     >
                   </v-layout>
                 </v-flex>
@@ -548,7 +552,7 @@ export default {
             next: {
               failure: ""
             },
-            settings: { ...this.options[data] }
+            settings: this.options[data]
           });
           this.shapeCount += 1;
         }
@@ -703,6 +707,17 @@ export default {
       };
       this.flowJSON = json;
       this.$store.dispatch("updateJSON", json);
+    },
+    addMenuSettings(settings, index) {
+      let length = settings[settings.length - 1].id + 1;
+      this.shapes[index].settings.push({
+        id: length,
+        value: `${length + 1}`,
+        action: ""
+      });
+    },
+    removeMenuSettings(footer, index) {
+      this.shapes[footer].settings.splice(index, 1);
     }
   },
   updated() {
@@ -949,6 +964,7 @@ body .leader-line {
   padding: 20px;
   background: #fff;
   width: 700px;
+  z-index: 1;
 }
 
 .foot .close,
