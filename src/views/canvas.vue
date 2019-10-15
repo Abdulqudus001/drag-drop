@@ -3,11 +3,44 @@
     <json-comp :json="flowJSON" v-show="showJSONComponent"></json-comp>
     <div class="nav">
       <ul>
-        <li id="audio" draggable="true" @dragstart="dragFlow($event)">Audio</li>
-        <li id="menu" draggable="true" @dragstart="dragFlow($event)">Menu</li>
-        <li id="dial" draggable="true" @dragstart="dragFlow($event)">Dial</li>
-        <li id="crm" draggable="true" @dragstart="dragFlow($event)">CRM</li>
-        <li id="validation" draggable="true" @dragstart="dragFlow($event)">
+        <li
+          id="audio"
+          draggable="true"
+          @drag="draggingFlow($event)"
+          @dragstart="dragFlow($event)"
+        >
+          Audio
+        </li>
+        <li
+          id="menu"
+          draggable="true"
+          @drag="draggingFlow($event)"
+          @dragstart="dragFlow($event)"
+        >
+          Menu
+        </li>
+        <li
+          id="dial"
+          draggable="true"
+          @drag="draggingFlow($event)"
+          @dragstart="dragFlow($event)"
+        >
+          Dial
+        </li>
+        <li
+          id="crm"
+          draggable="true"
+          @drag="draggingFlow($event)"
+          @dragstart="dragFlow($event)"
+        >
+          CRM
+        </li>
+        <li
+          id="validation"
+          draggable="true"
+          @drag="draggingFlow($event)"
+          @dragstart="dragFlow($event)"
+        >
           Validation
         </li>
         <li id="trigger" draggable="true" @dragstart="dragFlow($event)">
@@ -392,7 +425,9 @@ export default {
       showJSONComponent: false,
       lineColor: "#000",
       lineType: "success",
-      currentFlow: 0
+      currentFlow: 0,
+      offsetX: 0,
+      offsetY: 0
     };
   },
   mounted() {
@@ -449,6 +484,13 @@ export default {
     },
     dragFlow(ev) {
       ev.dataTransfer.setData("text/html", ev.target.id);
+      var crt = ev.target.cloneNode(true);
+      crt.style.border = "1px dotted black";
+      crt.style.width = "120px";
+      crt.style.height = "120px";
+      crt.style.borderRadius = "8px";
+      document.body.appendChild(crt);
+      ev.dataTransfer.setDragImage(crt, 0, 0);
     },
     disableDrag() {
       this.shapes.forEach(shape => {
@@ -473,6 +515,10 @@ export default {
         this.lineType = "success";
       }
       this.currentFlow = index;
+    },
+    draggingFlow(ev) {
+      this.offsetX = ev.screenX;
+      this.offsetY = ev.screenY;
     },
     allowDrop(ev) {
       ev.preventDefault();
@@ -500,10 +546,10 @@ export default {
           document.getElementById(this.start),
           document.getElementById(this.end),
           {
-            path: "grid",
+            path: "fluid",
             color: this.lineColor,
             endPlus: "arrow3",
-            size: 2
+            size: 1
           }
         );
         this.line.splice(this.line.length, 1, line);
