@@ -39,10 +39,10 @@
     </v-btn> -->
     <v-spacer></v-spacer>
     <v-btn icon @click="generateJSON">
-      <v-icon>code</v-icon>
+      <v-icon color="#fff">code</v-icon>
     </v-btn>
     <v-btn icon :href="getBlob" target="_blank" download="flow.json">
-      <v-icon>save</v-icon>
+      <v-icon color="white">save</v-icon>
     </v-btn>
     <!-- <v-menu offset-y>
       <v-avatar slot="activator" size="40">

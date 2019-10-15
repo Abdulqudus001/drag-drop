@@ -21,7 +21,7 @@
     app
   >
     <!-- Drawer Toolbar -->
-    <v-toolbar flat class="text-xs-center z-index-2">
+    <!-- <v-toolbar flat class="text-xs-center z-index-2">
       <v-list>
         <v-list-tile>
           <v-list-tile-avatar>
@@ -32,7 +32,7 @@
           </v-list-tile-content>
         </v-list-tile>
       </v-list>
-    </v-toolbar>
+    </v-toolbar> -->
     <!-- Drawer Items -->
     <v-list dense="dense" expand="expand" class="nav-drawer" id="app-sidebar">
       <template v-for="(item, i) in items">
@@ -192,7 +192,7 @@
       <v-spacer class="mb-5"></v-spacer>
       <div class="flows">
         <ul>
-          <li>
+          <li class="flows__title">
             <p>Add flow</p>
             <v-btn fab class="fab" @click="addFlow">
               <v-icon color="#000">add</v-icon>
@@ -212,26 +212,6 @@
           </li>
         </ul>
       </div>
-      <!-- <div class="shapes">
-        <div
-          class="square"
-          id="square"
-          draggable="true"
-          @dragstart="drag($event)"
-        ></div>
-        <div
-          class="circle"
-          id="circle"
-          draggable="true"
-          @dragstart="drag($event)"
-        ></div>
-        <div
-          class="rect"
-          id="rect"
-          draggable="true"
-          @dragstart="drag($event)"
-        ></div>
-      </div> -->
     </v-list>
     <div
       class="sidebar-background"
@@ -382,6 +362,12 @@ export default {
 }
 .flows ul {
   list-style-type: none;
+  padding: 0;
+}
+.flows__title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-transform: uppercase;
 }
 .flow {
   cursor: pointer;
@@ -393,6 +379,8 @@ export default {
   color: #fff;
   align-items: center;
   justify-content: space-between;
+  outline: none;
+  border: none;
 }
 
 .flow:hover {

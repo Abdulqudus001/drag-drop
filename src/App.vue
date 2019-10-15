@@ -6,19 +6,19 @@
       <router-view :flows="flows" :flow="flow" :showJSON="showJSON" />
     </v-content>
     <!-- <router-view name="footer" /> -->
-    <app-settings
+    <!-- <app-settings
       :drawer="subDrawer"
       @toggleSubDrawer="handleSubdrawer"
-    ></app-settings>
+    ></app-settings> -->
     <!-- Toggle settings button -->
-    <v-btn fixed class="settings-btn" @click.stop="subDrawer = !subDrawer">
+    <!-- <v-btn fixed class="settings-btn" @click.stop="subDrawer = !subDrawer">
       <v-icon light>settings</v-icon>
-    </v-btn>
+    </v-btn> -->
   </v-app>
 </template>
 <script>
 import { mapGetters } from "vuex";
-import AppSettings from "@/components/AppSettings";
+// import AppSettings from "@/components/AppSettings";
 export default {
   data() {
     return {
@@ -33,9 +33,9 @@ export default {
       colorScheme: "colorScheme"
     })
   },
-  components: {
-    AppSettings
-  },
+  // components: {
+  //   AppSettings
+  // },
   methods: {
     changeFlow([flows, flow]) {
       this.flows = flows;
