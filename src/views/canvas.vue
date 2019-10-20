@@ -3,44 +3,19 @@
     <json-comp :json="flowJSON" v-show="showJSONComponent"></json-comp>
     <div class="nav">
       <ul>
-        <li
-          id="audio"
-          draggable="true"
-          @drag="draggingFlow($event)"
-          @dragstart="dragFlow($event)"
-        >
+        <li id="audio" draggable="true" @dragstart="dragFlow($event)">
           Audio
         </li>
-        <li
-          id="menu"
-          draggable="true"
-          @drag="draggingFlow($event)"
-          @dragstart="dragFlow($event)"
-        >
+        <li id="menu" draggable="true" @dragstart="dragFlow($event)">
           Menu
         </li>
-        <li
-          id="dial"
-          draggable="true"
-          @drag="draggingFlow($event)"
-          @dragstart="dragFlow($event)"
-        >
+        <li id="dial" draggable="true" @dragstart="dragFlow($event)">
           Dial
         </li>
-        <li
-          id="crm"
-          draggable="true"
-          @drag="draggingFlow($event)"
-          @dragstart="dragFlow($event)"
-        >
+        <li id="crm" draggable="true" @dragstart="dragFlow($event)">
           CRM
         </li>
-        <li
-          id="validation"
-          draggable="true"
-          @drag="draggingFlow($event)"
-          @dragstart="dragFlow($event)"
-        >
+        <li id="validation" draggable="true" @dragstart="dragFlow($event)">
           Validation
         </li>
         <li id="trigger" draggable="true" @dragstart="dragFlow($event)">
@@ -60,8 +35,8 @@
         :key="item.id"
         :min-width="120"
         :min-height="120"
-        :w="120"
-        :h="120"
+        :w="item.w"
+        :h="item.h"
         :x="item.x"
         :y="item.y"
         class-name="flow"
@@ -70,8 +45,7 @@
         :ref="item.id"
         :draggable="item.draggable"
         :parent="true"
-        :grid="[20, 20]"
-        @dragging="positionLine(index)"
+        @dragging="positionLine"
         @resizing="positionLine(index)"
         @activated="activated(index)"
         @deactivated="item.showCircle = false"
@@ -383,7 +357,8 @@ export default {
             value: "2",
             action: ""
           }
-        ]
+        ],
+        crm: {}
       },
       menuItems: ["Playback Audio1", "Playback Audio1", "Dial queue"],
       connections: ["option", "option"],
@@ -398,6 +373,8 @@ export default {
           name: "trigger",
           x: 45,
           y: 18,
+          w: 120,
+          h: 120,
           title: "Trigger",
           description: "Description",
           draggable: true,
@@ -427,7 +404,8 @@ export default {
       lineType: "success",
       currentFlow: 0,
       offsetX: 0,
-      offsetY: 0
+      offsetY: 0,
+      selectedFlow: 0
     };
   },
   mounted() {
@@ -443,14 +421,16 @@ export default {
   },
   methods: {
     showFlowFooter(index) {
-      this.shapes.forEach(shape => {
-        shape.showFooter = false;
+      this.shapes.forEach((shape, shapeIndex) => {
+        if (index != shapeIndex) {
+          shape.showFooter = false;
+        }
       });
-      this.shapes[index].showFooter = true;
+      this.shapes[index].showFooter = !this.shapes[index].showFooter;
     },
-    positionLine(flowIndex) {
-      if (isNumber(flowIndex)) {
-        this.scrollPage(flowIndex);
+    positionLine() {
+      if (isNumber(this.selectedFlow)) {
+        this.scrollPage(this.selectedFlow);
       }
       if (this.line) {
         this.line.forEach(line => {
@@ -515,10 +495,6 @@ export default {
         this.lineType = "success";
       }
       this.currentFlow = index;
-    },
-    draggingFlow(ev) {
-      this.offsetX = ev.screenX;
-      this.offsetY = ev.screenY;
     },
     allowDrop(ev) {
       ev.preventDefault();
@@ -590,6 +566,8 @@ export default {
             name: data,
             x: ev.offsetX / zoomInt,
             y: ev.offsetY / zoomInt,
+            w: 120,
+            h: 120,
             title: `${data.toUpperCase()}`,
             draggable: true,
             description: "Description",
@@ -610,6 +588,7 @@ export default {
       // });
       // this.shapes[id].showFooter = true;
       this.shapes[id].showCircle = true;
+      this.selectedFlow = id;
     },
     deActivated(id) {
       this.shapes[id].showFooter = false;

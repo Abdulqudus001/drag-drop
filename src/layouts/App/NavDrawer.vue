@@ -10,7 +10,7 @@
     fixed
     width="260"
     :mini-variant.sync="navMiniVarient"
-    :clipped="clipped"
+    :clipped="true"
     v-model="drawer"
     :left="navDrawerPosition === 'left'"
     :right="navDrawerPosition === 'right'"
@@ -189,12 +189,12 @@
           >
         </v-list-tile>
       </template>
-      <v-spacer class="mb-5"></v-spacer>
+      <!-- <v-spacer class="mb-5"></v-spacer> -->
       <div class="flows">
         <ul>
           <li class="flows__title">
             <p>Add flow</p>
-            <v-btn fab class="fab" @click="addFlow">
+            <v-btn fab flat class="fab" @click="addFlow">
               <v-icon color="#000">add</v-icon>
             </v-btn>
           </li>
@@ -206,7 +206,7 @@
             @click="changeFlow(flow, index)"
           >
             {{ flow }}
-            <v-btn fab class="flow-fab" @click="removeFlow(index)">
+            <v-btn fab flat class="flow-fab" @click="removeFlow(index)">
               <v-icon color="#000">close</v-icon>
             </v-btn>
           </li>
@@ -363,6 +363,7 @@ export default {
 .flows ul {
   list-style-type: none;
   padding: 0;
+  color: #000;
 }
 .flows__title {
   font-size: 1.2rem;
@@ -376,7 +377,7 @@ export default {
 .flows ul li {
   margin: 15px 0;
   display: flex;
-  color: #fff;
+  color: #000;
   align-items: center;
   justify-content: space-between;
   outline: none;
@@ -385,7 +386,7 @@ export default {
 
 .flow:hover {
   background: rgba(255, 255, 255, 0.1);
-  padding: 7px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 5px;
 }
 

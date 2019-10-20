@@ -12,7 +12,7 @@
       @click.stop="$store.dispatch('toggleDrawer', !navDrawer)"
     ></v-toolbar-side-icon>
     <v-toolbar-title
-      v-text="title"
+      v-text="'Vuse'"
       class="ml-0 hidden-lg-and-up"
     ></v-toolbar-title>
     <v-btn
