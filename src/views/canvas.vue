@@ -33,8 +33,8 @@
       <vue-draggable-resizable
         v-for="(item, index) in shapes"
         :key="item.id"
-        :min-width="120"
-        :min-height="120"
+        :min-width="150"
+        :min-height="100"
         :w="item.w"
         :h="item.h"
         :x="item.x"
@@ -77,8 +77,14 @@
         >
           <div :id="item.id" class="content__header">
             <p>{{ item.title }}</p>
-            <v-icon @click.stop="showFlowFooter(index)">settings</v-icon>
-            <v-icon @click.stop="removeFlow(index)">close</v-icon>
+            <v-icon color="#fff" @click.stop="showFlowFooter(index)"
+              >settings</v-icon
+            >
+            <v-btn fab class="flow-btn">
+              <v-icon color="#2196f3" @click.stop="removeFlow(index)"
+                >mdi-minus</v-icon
+              >
+            </v-btn>
           </div>
           <div :id="item.id" class="content__description">
             <v-icon>{{ icon[`${item.data}`] }}</v-icon>
@@ -87,11 +93,11 @@
         </div>
       </vue-draggable-resizable>
     </div>
-    <v-btn fixed fab class="zoom-in" @click.stop="zoomIn">
-      <v-icon light>add</v-icon>
+    <v-btn fixed color="#000" class="zoom-in" @click.stop="zoomIn">
+      <v-icon color="#fff" light>add</v-icon>
     </v-btn>
-    <v-btn fixed fab class="zoom-out" @click.stop="zoomOut">
-      <v-icon light>mdi-minus</v-icon>
+    <v-btn fixed color="#000" class="zoom-out" @click.stop="zoomOut">
+      <v-icon color="#fff" light>mdi-minus</v-icon>
     </v-btn>
     <div
       v-for="(footer, index) in shapes"
@@ -373,8 +379,8 @@ export default {
           name: "trigger",
           x: 45,
           y: 18,
-          w: 120,
-          h: 120,
+          w: 150,
+          h: 100,
           title: "Trigger",
           description: "Description",
           draggable: true,
@@ -466,8 +472,8 @@ export default {
       ev.dataTransfer.setData("text/html", ev.target.id);
       var crt = ev.target.cloneNode(true);
       crt.style.border = "1px dotted black";
-      crt.style.width = "120px";
-      crt.style.height = "120px";
+      crt.style.width = "150px";
+      crt.style.height = "100px";
       crt.style.borderRadius = "8px";
       document.body.appendChild(crt);
       ev.dataTransfer.setDragImage(crt, 0, 0);
@@ -566,8 +572,8 @@ export default {
             name: data,
             x: ev.offsetX / zoomInt,
             y: ev.offsetY / zoomInt,
-            w: 120,
-            h: 120,
+            w: 150,
+            h: 100,
             title: `${data.toUpperCase()}`,
             draggable: true,
             description: "Description",
@@ -769,6 +775,11 @@ export default {
 </script>
 
 <style>
+.flow-btn.v-btn {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #2196f3;
+}
 body .leader-line {
   pointer-events: auto !important;
 }
@@ -859,7 +870,8 @@ body .leader-line {
 }
 
 .content__header {
-  background: #241d3b;
+  /* background: #241d3b; */
+  background: #000;
   text-align: center;
   font-weight: bold;
   color: #fff;
@@ -877,7 +889,7 @@ body .leader-line {
 }
 
 .content__header i {
-  color: #fff !important;
+  color: #fff;
   cursor: pointer;
 }
 
@@ -1073,8 +1085,9 @@ body .leader-line {
 .zoom-in,
 .zoom-out {
   top: 90%;
-  width: 40px;
-  height: 40px;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px;
 }
 
 .zoom-in {
