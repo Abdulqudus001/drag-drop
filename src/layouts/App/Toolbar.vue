@@ -3,7 +3,7 @@
     :fixed="fixedToolbar"
     v-if="toolbar"
     :class="navToolbarScheme"
-    :clipped-left="toolbarClippedLeft"
+    class="toolbar"
     app
     flat
   >
@@ -135,3 +135,8 @@ export default {
   }
 };
 </script>
+<style>
+.toolbar {
+  padding: 0 !important;
+}
+</style>
