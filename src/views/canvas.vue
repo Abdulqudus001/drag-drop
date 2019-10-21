@@ -784,8 +784,11 @@ body .leader-line {
   pointer-events: auto !important;
 }
 .canvas {
-  overflow-x: auto;
-  overflow-y: auto;
+  overflow-x: scroll;
+  overflow-y: scroll;
+  height: 100vh;
+  width: 100%;
+  padding-bottom: 100px;
 }
 .multiselect {
   width: 60%;
@@ -1092,11 +1095,11 @@ body .leader-line {
 }
 
 .zoom-in {
-  right: 50px;
+  right: 80px;
 }
 
 .zoom-out {
-  right: 0;
+  right: 30px;
 }
 .flow {
   border: 1px solid #373737;
