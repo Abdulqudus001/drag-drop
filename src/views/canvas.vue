@@ -786,7 +786,7 @@ body .leader-line {
 .canvas {
   overflow-x: scroll;
   overflow-y: scroll;
-  height: 100vh;
+  height: 85vh;
   width: 100%;
   padding-bottom: 100px;
 }
