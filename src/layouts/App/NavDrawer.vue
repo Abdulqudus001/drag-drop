@@ -8,7 +8,7 @@
     ]"
     persistent
     fixed
-    width="260"
+    width="200"
     :mini-variant.sync="navMiniVarient"
     :clipped="true"
     v-model="drawer"
@@ -206,7 +206,7 @@
             @click="changeFlow(flow, index)"
           >
             {{ flow }}
-            <v-btn fab flat class="flow-fab" @click="removeFlow(index)">
+            <v-btn fab flat class="flow-fab" @click.stop="removeFlow(index)">
               <v-icon color="#000">close</v-icon>
             </v-btn>
           </li>
@@ -274,7 +274,7 @@ export default {
   },
   methods: {
     addFlow() {
-      this.flows.push(`Flow ${this.count + 1}`);
+      this.flows.push(`Flow ${this.flows.length + 1}`);
       this.count++;
     },
     changeFlow(flow, id) {
@@ -286,6 +286,10 @@ export default {
     },
     removeFlow(index) {
       this.flows.splice(index, 1);
+      this.flows = this.flows.map((flow, index) => {
+        return `Flow ${index + 1}`;
+      });
+      this.changeFlow(this.flows[0], 0);
     },
     drag(ev) {
       ev.dataTransfer.setData("text/html", ev.target.id);
@@ -362,8 +366,8 @@ export default {
 }
 .flows ul {
   list-style-type: none;
-  padding: 0;
   color: #000;
+  padding: 0;
 }
 .flows__title {
   font-size: 1.2rem;
@@ -382,18 +386,22 @@ export default {
   justify-content: space-between;
   outline: none;
   border: none;
+  padding: 0 20px;
+  border-bottom: 1px solid #000;
+  border-radius: 0;
 }
 
 .flow:hover {
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  /* border: 1px solid rgba(0, 0, 0, 0.1); */
   border-radius: 5px;
 }
 
 .flow.selected {
   background: rgba(255, 255, 255, 0.1);
-  padding: 7px 0px;
+  /* border: 1px solid rgba(0, 0, 0, 0.1); */
   border-radius: 5px;
+  font-weight: bold;
 }
 
 .flows p {
