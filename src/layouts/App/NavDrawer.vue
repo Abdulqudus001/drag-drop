@@ -19,6 +19,7 @@
     floating
     id="app-drawer"
     app
+    dark
   >
     <!-- Drawer Toolbar -->
     <!-- <v-toolbar flat class="text-xs-center z-index-2">

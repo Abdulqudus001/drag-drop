@@ -7,13 +7,18 @@ import { store } from "@/store";
 Vue.use(Vuetify, {
   iconfont: "md",
   theme: {
-    primary: store.state.swatch.colorScheme.primary,
-    secondary: colors.pink.base,
-    accent: colors.deepPurple.accent2,
-    error: colors.red.accent4,
-    info: colors.blue.lighten1,
-    success: colors.green.accent4,
-    warning: colors.amber.darken2
+    dark: true,
+    themes: {
+      dark: {
+        primary: store.state.swatch.colorScheme.primary,
+        secondary: colors.pink.base,
+        accent: colors.deepPurple.accent2,
+        error: colors.red.accent4,
+        info: colors.blue.lighten1,
+        success: colors.green.accent4,
+        warning: colors.amber.darken2
+      }
+    }
   },
   options: {
     themeVariations: ["primary", "secondary"]

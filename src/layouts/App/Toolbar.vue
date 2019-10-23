@@ -4,8 +4,8 @@
     v-if="toolbar"
     :class="navToolbarScheme"
     class="toolbar"
+    :clipped="false"
     app
-    flat
   >
     <v-toolbar-side-icon
       class="hidden-lg-and-up"
@@ -39,10 +39,16 @@
     </v-btn> -->
     <v-spacer></v-spacer>
     <v-btn icon @click="generateJSON">
-      <v-icon color="#fff">code</v-icon>
+      <v-tooltip bottom>
+        <v-icon slot="activator" color="#fff">code</v-icon>
+        <span>Show JSON</span>
+      </v-tooltip>
     </v-btn>
     <v-btn icon :href="getBlob" target="_blank" download="flow.json">
-      <v-icon color="white">save</v-icon>
+      <v-tooltip bottom>
+        <v-icon slot="activator" color="#fff">save</v-icon>
+        <span>Download JSON</span>
+      </v-tooltip>
     </v-btn>
     <!-- <v-menu offset-y>
       <v-avatar slot="activator" size="40">

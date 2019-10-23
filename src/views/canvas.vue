@@ -856,11 +856,13 @@ body .leader-line {
   align-items: center;
   justify-content: space-between;
   position: relative;
+  transition: 0.2s all;
 }
 
 .nav li:hover {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 12px;
+  font-size: 17px;
+  /* background: rgba(0, 0, 0, 0.05);
+  border-radius: 12px; */
 }
 
 .content {

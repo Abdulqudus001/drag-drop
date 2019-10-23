@@ -15,8 +15,8 @@ export default {
 <style>
 .json {
   position: fixed;
-  top: 70px;
-  left: 260px;
+  top: 69px;
+  left: 200px;
   right: 0;
   bottom: 0;
   background: #fff;
