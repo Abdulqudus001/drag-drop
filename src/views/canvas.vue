@@ -453,10 +453,10 @@ export default {
         screenBottom = window.innerHeight,
         screenRight = window.innerWidth;
       if (screenBottom - flowBottom < 200) {
-        window.scrollBy(0, 50);
+        div.scrollBy(0, 50);
         this.shapes[index].showFooter = false;
       } else if (screenBottom - flowBottom > 400) {
-        window.scrollBy(0, -50);
+        div.scrollBy(0, -50);
       }
       if (screenRight - flowRight < 200) {
         div.scrollBy(50, 0);
@@ -637,7 +637,8 @@ export default {
       this.line.forEach(line => {
         line.outline = false;
       });
-      const color = this.lineColor == "#f00" ? "#000" : "#f00";
+      const lineColor = this.line[index].color;
+      const color = lineColor == "#f00" ? "#000" : "#f00";
       this.line[index].outline = true;
       this.line[index].outlineColor = color;
       this.line[index].outlineSize = "5";
@@ -673,7 +674,12 @@ export default {
             line.style.zoom = "100%";
           });
         }
+        this.handleZoomIn(div.style.zoom, div, lines);
+      } else {
+        this.handleZoomIn(zoom, div, lines);
       }
+    },
+    handleZoomIn(zoom, div, lines) {
       if (parseInt(zoom) >= 30) {
         div.style.zoom = `${parseInt(div.style.zoom) + 10}%`;
         if (lines) {
@@ -775,6 +781,9 @@ export default {
 </script>
 
 <style>
+body {
+  overflow: hidden;
+}
 .flow-btn.v-btn {
   width: 25px;
   height: 25px;
@@ -857,6 +866,7 @@ body .leader-line {
   justify-content: space-between;
   position: relative;
   transition: 0.2s all;
+  cursor: pointer;
 }
 
 .nav li:hover {
